@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SoundHub</title>
+<meta name="theme-color" content="#0a0a0f"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0a0a0f;--surface:#12121a;--card:#1a1a28;--border:rgba(255,255,255,0.07);--pink:#ff3cac;--blue:#2b86c5;--purple:#784ba0;--text:#f0eeff;--muted:rgba(240,238,255,0.45);--r:18px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;min-height:100dvh;overflow-x:hidden}
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 80% 10%,rgba(255,60,172,.3),transparent),
+             radial-gradient(ellipse 50% 60% at 10% 80%,rgba(43,134,197,.2),transparent)}
+.wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:0 18px 110px}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:26px 0 8px}
+.logo{font-family:"Unbounded",sans-serif;font-weight:900;font-size:1.25rem;letter-spacing:-.04em;
+  background:linear-gradient(135deg,var(--pink),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo b{font-weight:300}
+.hdr-btns{display:flex;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);
+  cursor:pointer;display:grid;place-items:center;font-size:.9rem;color:var(--text)}
+.hero{padding:44px 0 32px}
+.hero-sub{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.hero h1{font-family:"Unbounded",sans-serif;font-size:clamp(1.9rem,7vw,2.6rem);font-weight:700;line-height:1.1;letter-spacing:-.04em;margin-bottom:12px}
+.hero h1 em{font-style:normal;color:var(--pink)}
+.hero p{font-size:.9rem;color:var(--muted);line-height:1.7;max-width:360px}
+.sec{display:flex;align-items:center;justify-content:space-between;margin:32px 0 14px}
+.sec-t{font-family:"Unbounded",sans-serif;font-size:.8rem;font-weight:700}
+.sec-a{font-size:.75rem;color:var(--pink);background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
+.player{background:linear-gradient(135deg,#1e1030,#0e1a2e);border:1px solid rgba(255,60,172,.2);
+  border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.player::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--pink),transparent);opacity:.5}
+.pl-art{width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,var(--pink),var(--purple));
+  display:grid;place-items:center;font-size:1.3rem;flex-shrink:0;box-shadow:0 0 18px rgba(255,60,172,.3)}
+.pl-info{flex:1;min-width:0}
+.pl-src{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);margin-bottom:3px}
+.pl-title{font-family:"Unbounded",sans-serif;font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-artist{font-size:.74rem;color:var(--muted);margin-top:2px}
+.pl-prog{margin-top:8px;display:flex;align-items:center;gap:7px}
+.prog-bar{flex:1;height:3px;background:rgba(255,255,255,.1);border-radius:2px;cursor:pointer}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:2px;transition:width .4s linear}
+.pl-time{font-size:.6rem;color:var(--muted)}
+.pl-ctrls{display:flex;gap:8px;align-items:center}
+.c-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:4px;transition:color .2s}
+.c-btn:hover{color:var(--text)}
+.c-btn.play{width:34px;height:34px;border-radius:50%;background:var(--pink);color:#fff;font-size:.85rem;
+  display:grid;place-items:center;box-shadow:0 0 14px rgba(255,60,172,.4)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.acard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px 12px 14px;display:flex;flex-direction:column;align-items:center;gap:9px;
+  cursor:pointer;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s}
+.acard:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.4)}
+.acard.add{border-style:dashed;border-color:rgba(255,255,255,.1);background:transparent}
+.acard.add:hover{border-color:var(--pink)}
+.a-ico{width:54px;height:54px;border-radius:13px;display:grid;place-items:center;font-size:1.6rem;position:relative}
+.a-dot{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;border:2px solid var(--card)}
+.dot-g{background:#1db954}.dot-r{background:#fc3c44}.dot-y{background:#ffcb00}
+.a-name{font-size:.68rem;color:var(--muted);text-align:center}
+.pl-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.pl-scroll::-webkit-scrollbar{display:none}
+.pl-card{flex-shrink:0;width:140px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .2s}
+.pl-card:hover{transform:translateY(-3px)}
+.pl-cov{height:90px;display:grid;place-items:center;font-size:1.9rem}
+.pl-inf{padding:9px 11px 11px}
+.pl-nm{font-family:"Unbounded",sans-serif;font-size:.68rem;font-weight:700;margin-bottom:2px}
+.pl-ct{font-size:.62rem;color:var(--muted)}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(10,10,15,.88);backdrop-filter:blur(18px);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom))}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
+  color:var(--muted);font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;
+  border:none;background:none;font-family:inherit;padding:0 16px;transition:color .2s}
+.ni .ic{font-size:1.2rem}
+.ni.on{color:var(--pink)}
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);
+  display:none;place-items:end center}
+.overlay.open{display:grid}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:22px 22px 0 0;
+  width:100%;max-width:600px;padding:26px 22px 38px;animation:sup .28s ease}
+@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-t{font-family:"Unbounded",sans-serif;font-weight:700;font-size:.95rem;margin-bottom:18px}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.mapp{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;
+  padding:11px 7px;border-radius:11px;border:1px solid transparent;transition:background .2s,border-color .2s}
+.mapp:hover{background:var(--card);border-color:var(--border)}
+.mapp-ico{width:46px;height:46px;border-radius:11px;display:grid;place-items:center;font-size:1.4rem}
+.mapp-nm{font-size:.62rem;color:var(--muted);text-align:center}
+.mapp-st{font-size:.58rem;text-align:center}
+.mbtn{width:100%;margin-top:18px;padding:13px;border-radius:11px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-family:inherit;font-size:.82rem;cursor:pointer}
+.toast{position:fixed;bottom:75px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--card);border:1px solid var(--border);border-radius:99px;padding:9px 18px;
+  font-size:.77rem;opacity:0;transition:opacity .3s,transform .3s;z-index:300;white-space:nowrap;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.fi{animation:fi .5s ease both}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div class="wrap">
+  <header class="hdr">
+    <div class="logo">Sound<b>Hub</b></div>
+    <div class="hdr-btns">
+      <button class="icon-btn">&#128269;</button>
+      <button class="icon-btn">&#9881;</button>
+    </div>
+  </header>
+  <section class="hero fi">
+    <div class="hero-sub">Bem-vindo de volta</div>
+    <h1>Toda a sua<br/><em>m&#250;sica</em>, aqui.</h1>
+    <p>Acesse todos os seus apps em um &#250;nico lugar. Sem trocar de app, sem perder o fio da meada.</p>
+  </section>
+  <div class="sec fi d1"><span class="sec-t">Tocando agora</span></div>
+  <div class="player fi d1">
+    <div class="pl-art">&#127925;</div>
+    <div class="pl-info">
+      <div class="pl-src" id="plSrc">&#8212;</div>
+      <div class="pl-title" id="plTitle">Nenhuma m&#250;sica tocando</div>
+      <div class="pl-artist" id="plArtist">Abra um app e comece a ouvir</div>
+      <div class="pl-prog">
+        <span class="pl-time" id="plCur">0:00</span>
+        <div class="prog-bar" id="progBar"><div class="prog-fill" id="progFill"></div></div>
+        <span class="pl-time" id="plTot">0:00</span>
+      </div>
+    </div>
+    <div class="pl-ctrls">
+      <button class="c-btn" id="btnPrev">&#9198;</button>
+      <button class="c-btn play" id="btnPlay">&#9654;</button>
+      <button class="c-btn" id="btnNext">&#9197;</button>
+    </div>
+  </div>
+  <div class="sec fi d2">
+    <span class="sec-t">Meus Apps</span>
+    <button class="sec-a" id="btnManage">Gerenciar</button>
+  </div>
+  <div class="grid fi d2" id="appsGrid"></div>
+  <div class="sec fi d3">
+    <span class="sec-t">Playlists Recentes</span>
+    <button class="sec-a">Ver todas</button>
+  </div>
+  <div class="pl-scroll fi d3" id="plScroll"></div>
+</div>
+<nav class="bnav">
+  <button class="ni on"><span class="ic">&#127968;</span>In&#237;cio</button>
+  <button class="ni"><span class="ic">&#127925;</span>Apps</button>
+  <button class="ni"><span class="ic">&#128203;</span>Listas</button>
+  <button class="ni"><span class="ic">&#128269;</span>Buscar</button>
+</nav>
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-t">Adicionar App</div>
+    <div class="mgrid" id="mgrid"></div>
+    <button class="mbtn" id="mbtnClose">Fechar</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var APPS = [
+  {id:"spotify",    name:"Spotify",      ico:"&#127911;", bg:"#0d2b18", url:"https://open.spotify.com",    dot:"dot-g"},
+  {id:"youtube",    name:"YT Music",     ico:"&#127908;", bg:"#2b0d0d", url:"https://music.youtube.com",   dot:"dot-r"},
+  {id:"deezer",     name:"Deezer",       ico:"&#127926;", bg:"#1a0e2b", url:"https://www.deezer.com",      dot:null},
+  {id:"amazon",     name:"Amazon Music", ico:"&#127925;", bg:"#0d1e2b", url:"https://music.amazon.com.br", dot:"dot-y"},
+  {id:"apple",      name:"Apple Music",  ico:"&#127897;", bg:"#2b0d13", url:"https://music.apple.com",     dot:null},
+  {id:"tidal",      name:"Tidal",        ico:"&#127754;", bg:"#0d2427", url:"https://tidal.com",           dot:null},
+  {id:"soundcloud", name:"SoundCloud",   ico:"&#9728;",   bg:"#2b1a0d", url:"https://soundcloud.com",      dot:null},
+  {id:"shazam",     name:"Shazam",       ico:"&#128251;", bg:"#0d1829", url:"https://www.shazam.com",      dot:null},
+  {id:"bandcamp",   name:"Bandcamp",     ico:"&#127928;", bg:"#0d1e26", url:"https://bandcamp.com",        dot:null},
+  {id:"lastfm",     name:"Last.fm",      ico:"&#128251;", bg:"#2b0d0d", url:"https://www.last.fm",         dot:null},
+  {id:"genius",     name:"Genius",       ico:"&#9997;",   bg:"#252500", url:"https://genius.com",          dot:null},
+  {id:"audius",     name:"Audius",       ico:"&#128266;", bg:"#200b26", url:"https://audius.co",           dot:null}
+];
+var PLS = [
+  {name:"Favoritas",   count:"42 musicas", ico:"&#10084;", grad:"linear-gradient(135deg,#ff3cac,#784ba0)"},
+  {name:"Lo-fi Chill", count:"18 musicas", ico:"&#127769;",grad:"linear-gradient(135deg,#2b86c5,#0d2b45)"},
+  {name:"Workout",     count:"30 musicas", ico:"&#128170;",grad:"linear-gradient(135deg,#f7971e,#ffd200)"},
+  {name:"Foco",        count:"25 musicas", ico:"&#129504;",grad:"linear-gradient(135deg,#11998e,#38ef7d)"},
+  {name:"Noite",       count:"21 musicas", ico:"&#127751;",grad:"linear-gradient(135deg,#fc466b,#3f5efb)"}
+];
+var SONGS = [
+  {title:"Blinding Lights", artist:"The Weeknd",   dur:200},
+  {title:"As It Was",       artist:"Harry Styles", dur:167},
+  {title:"Flowers",         artist:"Miley Cyrus",  dur:200},
+  {title:"Anti-Hero",       artist:"Taylor Swift", dur:200}
+];
+var active = ["spotify","youtube","deezer"];
+try { active = JSON.parse(localStorage.getItem("sh_apps") || JSON.stringify(active)); } catch(ex) {}
+function save() { try { localStorage.setItem("sh_apps", JSON.stringify(active)); } catch(ex) {} }
+function timeFmt(s) {
+  var m = Math.floor(s / 60);
+  var sc = Math.floor(s % 60);
+  return m + ":" + (sc < 10 ? "0" : "") + sc;
+}
+function renderApps() {
+  var g = document.getElementById("appsGrid");
+  var h = "";
+  var i, a, dot;
+  for (i = 0; i < APPS.length; i++) {
+    a = APPS[i];
+    if (active.indexOf(a.id) < 0) { continue; }
+    dot = a.dot ? ("<div class="a-dot " + a.dot + ""></div>") : "";
+    h += "<a class="acard" href="" + a.url + "" target="_blank" data-id="" + a.id + "" data-name="" + a.name + "">";
+    h += "<div class="a-ico" style="background:" + a.bg + "">" + a.ico + dot + "</div>";
+    h += "<div class="a-name">" + a.name + "</div></a>";
+  }
+  h += "<div class="acard add" id="addBtn">";
+  h += "<div class="a-ico" style="background:rgba(255,255,255,.04)">+</div>";
+  h += "<div class="a-name">Adicionar</div></div>";
+  g.innerHTML = h;
+  var cards = g.querySelectorAll(".acard[data-id]");
+  for (i = 0; i < cards.length; i++) {
+    cards[i].addEventListener("click", function(e) {
+      var nm = this.getAttribute("data-name");
+      document.getElementById("plSrc").textContent = nm;
+      showToast("Abrindo " + nm + "...");
+    });
+  }
+  var addBtn = document.getElementById("addBtn");
+  if (addBtn) { addBtn.addEventListener("click", openModal); }
+}
+function renderPls() {
+  var el = document.getElementById("plScroll");
+  var h = "";
+  var i, p;
+  for (i = 0; i < PLS.length; i++) {
+    p = PLS[i];
+    h += "<div class="pl-card">";
+    h += "<div class="pl-cov" style="background:" + p.grad + "">" + p.ico + "</div>";
+    h += "<div class="pl-inf"><div class="pl-nm">" + p.name + "</div>";
+    h += "<div class="pl-ct">" + p.count + "</div></div></div>";
+  }
+  el.innerHTML = h;
+}
+function renderModal() {
+  var g = document.getElementById("mgrid");
+  var h = "";
+  var i, a, on, sty, sc, st;
+  for (i = 0; i < APPS.length; i++) {
+    a = APPS[i];
+    on = active.indexOf(a.id) > -1;
+    sty = on ? "background:var(--card);border-color:var(--border)" : "";
+    sc = on ? "#1db954" : "var(--muted)";
+    st = on ? "ativo" : "adicionar";
+    h += "<div class="mapp" style="" + sty + "" data-mid="" + a.id + "">";
+    h += "<div class="mapp-ico" style="background:" + a.bg + "">" + a.ico + "</div>";
+    h += "<div class="mapp-nm">" + a.name + "</div>";
+    h += "<div class="mapp-st" style="color:" + sc + "">" + st + "</div></div>";
+  }
+  g.innerHTML = h;
+  var mapps = g.querySelectorAll(".mapp");
+  for (i = 0; i < mapps.length; i++) {
+    mapps[i].addEventListener("click", function() {
+      toggleApp(this.getAttribute("data-mid"));
+    });
+  }
+}
+function toggleApp(id) {
+  var i = active.indexOf(id);
+  if (i > -1) { active.splice(i, 1); showToast("App removido"); }
+  else { active.push(id); showToast("App adicionado!"); }
+  save(); renderApps(); renderModal();
+}
+function openModal() { renderModal(); document.getElementById("overlay").classList.add("open"); }
+function closeModal() { document.getElementById("overlay").classList.remove("open"); }
+document.getElementById("mbtnClose").addEventListener("click", closeModal);
+document.getElementById("overlay").addEventListener("click", function(e) { if (e.target === e.currentTarget) { closeModal(); } });
+document.getElementById("btnManage").addEventListener("click", openModal);
+var navItems = document.querySelectorAll(".ni");
+var n;
+for (n = 0; n < navItems.length; n++) {
+  navItems[n].addEventListener("click", function() {
+    var k;
+    for (k = 0; k < navItems.length; k++) { navItems[k].classList.remove("on"); }
+    this.classList.add("on");
+  });
+}
+var si = 0, playing = false, elapsed = 0, ptimer = null;
+function loadSong(i) {
+  var s = SONGS[i];
+  document.getElementById("plTitle").textContent = s.title;
+  document.getElementById("plArtist").textContent = s.artist;
+  document.getElementById("plTot").textContent = timeFmt(s.dur);
+  document.getElementById("plSrc").textContent = "Demo Player";
+  elapsed = 0;
+  updProg();
+}
+function updProg() {
+  var s = SONGS[si];
+  var pct = s.dur > 0 ? (elapsed / s.dur * 100) : 0;
+  document.getElementById("progFill").style.width = pct + "%";
+  document.getElementById("plCur").textContent = timeFmt(elapsed);
+}
+function startTimer() {
+  clearInterval(ptimer);
+  ptimer = setInterval(function() {
+    elapsed++;
+    if (elapsed >= SONGS[si].dur) { nextSong(); return; }
+    updProg();
+  }, 1000);
+}
+function playPause() {
+  playing = !playing;
+  document.getElementById("btnPlay").innerHTML = playing ? "&#9646;&#9646;" : "&#9654;";
+  if (playing) { startTimer(); } else { clearInterval(ptimer); }
+}
+function nextSong() {
+  si = (si + 1) % SONGS.length;
+  loadSong(si);
+  if (playing) { startTimer(); }
+}
+function prevSong() {
+  if (elapsed > 3) { elapsed = 0; updProg(); return; }
+  si = (si - 1 + SONGS.length) % SONGS.length;
+  loadSong(si);
+  if (playing) { startTimer(); }
+}
+document.getElementById("btnPlay").addEventListener("click", playPause);
+document.getElementById("btnNext").addEventListener("click", nextSong);
+document.getElementById("btnPrev").addEventListener("click", prevSong);
+document.getElementById("progBar").addEventListener("click", function(e) {
+  var r = e.currentTarget.getBoundingClientRect();
+  elapsed = Math.round((e.clientX - r.left) / r.width * SONGS[si].dur);
+  updProg();
+});
+var tTimer;
+function showToast(msg) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("on");
+  clearTimeout(tTimer);
+  tTimer = setTimeout(function() { t.classList.remove("on"); }, 2000);
+}
+loadSong(0);
+renderApps();
+renderPls();
+</script>
+</body>
+</html>
